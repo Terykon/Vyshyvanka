@@ -42,7 +42,7 @@
     <!-- JavaScript Engine -->
     <PackageVersion Include="Jint" Version="4.16.1" />
     <!-- Cron Expression Parsing -->
-    <PackageVersion Include="Cronos" Version="0.11.0" />
+    <PackageVersion Include="Cronos" Version="0.13.0" />
     <!-- JSONata Expression Language -->
     <PackageVersion Include="Jsonata.Net.Native" Version="3.0.0" />
     <!-- NuGet -->
