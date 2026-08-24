@@ -27,4 +27,10 @@ public interface IUserRepository
 
     /// <summary>Deletes the user with the given identifier.</summary>
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks if any seeded development user still has their original password unchanged.
+    /// Used to determine if development credentials should be shown on the login page.
+    /// </summary>
+    Task<bool> HasUnchangedSeededPasswordsAsync(CancellationToken cancellationToken = default);
 }

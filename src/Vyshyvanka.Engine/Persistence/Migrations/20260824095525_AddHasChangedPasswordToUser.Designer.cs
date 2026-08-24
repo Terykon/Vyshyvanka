@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Vyshyvanka.Engine.Persistence;
@@ -11,9 +12,11 @@ using Vyshyvanka.Engine.Persistence;
 namespace Vyshyvanka.Engine.Persistence.Migrations
 {
     [DbContext(typeof(VyshyvankaDbContext))]
-    partial class VyshyvankaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260824095525_AddHasChangedPasswordToUser")]
+    partial class AddHasChangedPasswordToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,4 +1,6 @@
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
+using Vyshyvanka.Contracts.Auth;
 using Vyshyvanka.Designer.Services;
 
 namespace Vyshyvanka.Designer.Pages;
@@ -11,15 +13,36 @@ public partial class Login
     [Inject]
     private NavigationManager Navigation { get; set; } = null!;
 
+    [Inject]
+    private HttpClient Http { get; set; } = null!;
+
     private readonly LoginModel _model = new();
     private string? _errorMessage;
     private bool _isLoading;
+    private bool _showDevCredentials;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (AuthService.IsAuthenticated)
         {
             Navigation.NavigateTo("/");
+            return;
+        }
+
+        await LoadAuthConfigAsync();
+    }
+
+    private async Task LoadAuthConfigAsync()
+    {
+        try
+        {
+            var config = await Http.GetFromJsonAsync<AuthConfigResponse>("api/auth/config");
+            _showDevCredentials = config?.ShowDevCredentials ?? false;
+        }
+        catch
+        {
+            // If we can't reach the API, don't show dev credentials
+            _showDevCredentials = false;
         }
     }
 

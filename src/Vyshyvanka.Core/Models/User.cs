@@ -43,6 +43,12 @@ public record User
     /// <summary>Which authentication provider owns this user.</summary>
     public AuthenticationProvider AuthenticationProvider { get; init; } = AuthenticationProvider.BuiltIn;
 
+    /// <summary>
+    /// Indicates whether the user has changed their password from the initial seeded value.
+    /// Used to determine if development credentials should still be shown on the login page.
+    /// </summary>
+    public bool HasChangedPassword { get; init; }
+
     /// <summary>Returns true if the account is currently locked out.</summary>
     public bool IsLockedOut => LockoutEnd.HasValue && LockoutEnd.Value > DateTime.UtcNow;
 }

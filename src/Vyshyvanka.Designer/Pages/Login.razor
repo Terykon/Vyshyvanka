@@ -39,24 +39,27 @@
                 </button>
             </EditForm>
 
-            <div class="dev-credentials">
-                <p class="dev-credentials-title">
-                    <i class="fa-solid fa-flask v-icon v-icon--sm"></i>
-                    Development credentials
-                </p>
-                <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("admin"))">
-                    <span class="v-badge v-badge--accent">Admin</span>
-                    <code>admin@vyshyvanka.local / Admin123!</code>
+            @if (_showDevCredentials)
+            {
+                <div class="dev-credentials">
+                    <p class="dev-credentials-title">
+                        <i class="fa-solid fa-flask v-icon v-icon--sm"></i>
+                        Development credentials
+                    </p>
+                    <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("admin"))">
+                        <span class="v-badge v-badge--accent">Admin</span>
+                        <code>admin@vyshyvanka.local / Admin123!</code>
+                    </div>
+                    <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("editor"))">
+                        <span class="v-badge v-badge--info">Editor</span>
+                        <code>editor@vyshyvanka.local / Editor123!</code>
+                    </div>
+                    <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("viewer"))">
+                        <span class="v-badge v-badge--default">Viewer</span>
+                        <code>viewer@vyshyvanka.local / Viewer123!</code>
+                    </div>
                 </div>
-                <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("editor"))">
-                    <span class="v-badge v-badge--info">Editor</span>
-                    <code>editor@vyshyvanka.local / Editor123!</code>
-                </div>
-                <div class="dev-credential-item" @onclick="@(() => PrefillCredentials("viewer"))">
-                    <span class="v-badge v-badge--default">Viewer</span>
-                    <code>viewer@vyshyvanka.local / Viewer123!</code>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

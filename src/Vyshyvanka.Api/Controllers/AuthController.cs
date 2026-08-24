@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Vyshyvanka.Api.Authorization;
 using Vyshyvanka.Api.Extensions;
+using Vyshyvanka.Contracts.Auth;
 using Vyshyvanka.Core.Enums;
 using Vyshyvanka.Core.Interfaces;
 using Vyshyvanka.Core.Models;
@@ -24,17 +25,26 @@ public class AuthController(
     /// </summary>
     [HttpGet("config")]
     [AllowAnonymous]
-    public IActionResult GetConfig()
+    public async Task<IActionResult> GetConfig(CancellationToken cancellationToken)
     {
         var isOidc = authSettings.Provider is AuthenticationProvider.Keycloak or AuthenticationProvider.Authentik;
+        var isBuiltIn = authSettings.Provider is AuthenticationProvider.BuiltIn;
+
+        // Only check for unchanged seeded passwords when using built-in auth
+        var showDevCredentials = false;
+        if (isBuiltIn)
+        {
+            var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+            showDevCredentials = await userRepository.HasUnchangedSeededPasswordsAsync(cancellationToken);
+        }
 
         return Ok(new AuthConfigResponse
         {
             Provider = authSettings.Provider.ToString(),
             Authority = isOidc ? authSettings.Authority : null,
             ClientId = isOidc ? authSettings.ClientId : null,
-            AllowRegistration = authSettings.Provider is AuthenticationProvider.BuiltIn &&
-                                authSettings.AllowRegistration
+            AllowRegistration = isBuiltIn && authSettings.AllowRegistration,
+            ShowDevCredentials = showDevCredentials
         });
     }
 
@@ -153,6 +163,50 @@ public class AuthController(
         return Ok(ToLoginResponse(result));
     }
 
+    /// <summary>
+    /// Change the current user's password (built-in provider only).
+    /// </summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequest request,
+        [FromServices] ICurrentUserService currentUserService,
+        CancellationToken cancellationToken)
+    {
+        if (authSettings.Provider is not AuthenticationProvider.BuiltIn)
+        {
+            return BadRequest(new
+            {
+                code = "UNSUPPORTED",
+                message = $"Password change is not available when using {authSettings.Provider} authentication"
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest(new { error = "Current password and new password are required" });
+        }
+
+        if (currentUserService.UserId is not { } userId)
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
+        var authService = serviceProvider.GetRequiredService<IAuthService>();
+        var (success, errorMessage) = await authService.ChangePasswordAsync(
+            userId,
+            request.CurrentPassword,
+            request.NewPassword,
+            cancellationToken);
+
+        if (!success)
+        {
+            return BadRequest(new { error = errorMessage });
+        }
+
+        return Ok(new { message = "Password changed successfully" });
+    }
+
     private static LoginResponse ToLoginResponse(AuthResult result) => new()
     {
         AccessToken = result.AccessToken!,
@@ -187,17 +241,6 @@ public class AuthController(
             return NotFound(new { code = "USER_NOT_FOUND", message = ex.Message });
         }
     }
-}
-
-public record AuthConfigResponse
-{
-    public string Provider { get; init; } = string.Empty;
-
-    public string? Authority { get; init; }
-
-    public string? ClientId { get; init; }
-
-    public bool AllowRegistration { get; init; }
 }
 
 public record LoginRequest

@@ -269,6 +269,44 @@ public class AuthService : IAuthService
         await _userRepository.UpdateAsync(unlockedUser, cancellationToken);
     }
 
+    public async Task<(bool Success, string? ErrorMessage)> ChangePasswordAsync(
+        Guid userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            return (false, "User not found");
+        }
+
+        // Verify current password
+        if (!VerifyPassword(currentPassword, user.PasswordHash))
+        {
+            return (false, "Current password is incorrect");
+        }
+
+        // Validate new password complexity
+        var passwordValidation = PasswordValidator.Validate(newPassword, _authSettings.MinPasswordLength);
+        if (!passwordValidation.IsValid)
+        {
+            return (false, passwordValidation.ErrorMessage);
+        }
+
+        // Update password and mark as changed
+        var newPasswordHash = HashPassword(newPassword);
+        var updatedUser = user with
+        {
+            PasswordHash = newPasswordHash,
+            HasChangedPassword = true
+        };
+
+        await _userRepository.UpdateAsync(updatedUser, cancellationToken);
+
+        return (true, null);
+    }
+
     private async Task RecordFailedLoginAttemptAsync(User user, CancellationToken cancellationToken)
     {
         var attempts = user.FailedLoginAttempts + 1;

@@ -2,6 +2,80 @@
 
 <div class="settings-panel">
     <div class="settings-section">
+        <h2 class="section-title">Security</h2>
+
+        @if (_authProvider == "BuiltIn")
+        {
+            <div class="password-change-form">
+                <h3 class="subsection-title">Change Password</h3>
+
+                @if (!string.IsNullOrEmpty(_passwordError))
+                {
+                    <div class="alert alert--danger">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>@_passwordError</span>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(_passwordSuccess))
+                {
+                    <div class="alert alert--success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>@_passwordSuccess</span>
+                    </div>
+                }
+
+                <div class="v-form-group">
+                    <label class="v-label" for="current-password">Current Password</label>
+                    <input id="current-password"
+                           type="password"
+                           class="v-input"
+                           @bind="_currentPassword"
+                           placeholder="Enter current password"
+                           disabled="@_isChangingPassword" />
+                </div>
+
+                <div class="v-form-group">
+                    <label class="v-label" for="new-password">New Password</label>
+                    <input id="new-password"
+                           type="password"
+                           class="v-input"
+                           @bind="_newPassword"
+                           placeholder="Enter new password"
+                           disabled="@_isChangingPassword" />
+                </div>
+
+                <div class="v-form-group">
+                    <label class="v-label" for="confirm-password">Confirm New Password</label>
+                    <input id="confirm-password"
+                           type="password"
+                           class="v-input"
+                           @bind="_confirmPassword"
+                           placeholder="Confirm new password"
+                           disabled="@_isChangingPassword" />
+                </div>
+
+                <button class="v-btn v-btn--primary"
+                        @onclick="ChangePasswordAsync"
+                        disabled="@(_isChangingPassword || string.IsNullOrWhiteSpace(_currentPassword) || string.IsNullOrWhiteSpace(_newPassword))">
+                    @if (_isChangingPassword)
+                    {
+                        <span class="v-spinner v-spinner--sm"></span>
+                    }
+                    <span>Change Password</span>
+                </button>
+            </div>
+        }
+        else
+        {
+            <p class="settings-note">
+                <i class="fa-solid fa-info-circle"></i>
+                Password management is handled by your organization's @_authProvider authentication provider.
+            </p>
+        }
+    </div>
+
+    <div class="settings-section">
         <h2 class="section-title">Themes</h2>
 
         <div class="theme-grid">

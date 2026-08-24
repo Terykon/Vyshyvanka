@@ -49,6 +49,12 @@ public class UserEntity
     /// <summary>Which authentication provider owns this user.</summary>
     public AuthenticationProvider AuthenticationProvider { get; set; }
 
+    /// <summary>
+    /// Indicates whether the user has changed their password from the initial seeded value.
+    /// Used to determine if development credentials should still be shown on the login page.
+    /// </summary>
+    public bool HasChangedPassword { get; set; }
+
     /// <summary>API keys owned by this user.</summary>
     public List<ApiKeyEntity> ApiKeys { get; set; } = [];
 }

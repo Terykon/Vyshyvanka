@@ -68,6 +68,7 @@ public class UserRepository(VyshyvankaDbContext context) : IUserRepository
         entity.LastLoginAt = user.LastLoginAt;
         entity.FailedLoginAttempts = user.FailedLoginAttempts;
         entity.LockoutEnd = user.LockoutEnd;
+        entity.HasChangedPassword = user.HasChangedPassword;
 
         await context.SaveChangesAsync(cancellationToken);
         return ToModel(entity);
@@ -90,6 +91,24 @@ public class UserRepository(VyshyvankaDbContext context) : IUserRepository
             context.Users.Remove(entity);
             await context.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task<bool> HasUnchangedSeededPasswordsAsync(CancellationToken cancellationToken = default)
+    {
+        // Check if any seeded development user still has their original password unchanged.
+        // Seeded users are identified by their well-known email addresses.
+        var seededEmails = new[]
+        {
+            "admin@vyshyvanka.local",
+            "editor@vyshyvanka.local",
+            "viewer@vyshyvanka.local"
+        };
+
+        return await context.Users
+            .AsNoTracking()
+            .AnyAsync(
+                u => seededEmails.Contains(u.Email) && !u.HasChangedPassword,
+                cancellationToken);
     }
 
     internal async Task UpdateRefreshTokenAsync(Guid userId, string? refreshToken, DateTime? expiresAt,
@@ -156,7 +175,8 @@ public class UserRepository(VyshyvankaDbContext context) : IUserRepository
         FailedLoginAttempts = entity.FailedLoginAttempts,
         LockoutEnd = entity.LockoutEnd,
         ExternalId = entity.ExternalId,
-        AuthenticationProvider = entity.AuthenticationProvider
+        AuthenticationProvider = entity.AuthenticationProvider,
+        HasChangedPassword = entity.HasChangedPassword
     };
 
     private static UserEntity ToEntity(User model) => new()
@@ -172,6 +192,7 @@ public class UserRepository(VyshyvankaDbContext context) : IUserRepository
         FailedLoginAttempts = model.FailedLoginAttempts,
         LockoutEnd = model.LockoutEnd,
         ExternalId = model.ExternalId,
-        AuthenticationProvider = model.AuthenticationProvider
+        AuthenticationProvider = model.AuthenticationProvider,
+        HasChangedPassword = model.HasChangedPassword
     };
 }

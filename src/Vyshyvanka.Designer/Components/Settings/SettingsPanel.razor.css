@@ -151,3 +151,61 @@
     font-size: var(--font-size-sm);
     color: var(--success);
 }
+
+/* Security section */
+.subsection-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-4);
+}
+
+.password-change-form {
+    max-width: 400px;
+}
+
+.password-change-form .v-form-group {
+    margin-bottom: var(--space-4);
+}
+
+.password-change-form .v-btn {
+    margin-top: var(--space-2);
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+}
+
+.alert--danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.alert--success {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.settings-note {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.settings-note i {
+    color: var(--info);
+}

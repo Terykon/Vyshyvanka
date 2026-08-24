@@ -170,6 +170,16 @@ public class LdapAuthService(
         await userRepository.UpdateAsync(unlockedUser, cancellationToken);
     }
 
+    public Task<(bool Success, string? ErrorMessage)> ChangePasswordAsync(
+        Guid userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        // Password changes are not supported with LDAP — users must change password via LDAP directory
+        return Task.FromResult<(bool, string?)>((false, "Password changes are not available when using LDAP authentication. Please change your password via your organization's LDAP directory."));
+    }
+
     private async Task RecordFailedLoginAttemptAsync(User user, CancellationToken cancellationToken)
     {
         var attempts = user.FailedLoginAttempts + 1;

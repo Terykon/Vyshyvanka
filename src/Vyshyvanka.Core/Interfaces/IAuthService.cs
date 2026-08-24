@@ -30,6 +30,15 @@ public interface IAuthService
     /// Unlocks a user account by resetting failed login attempts and lockout end time.
     /// </summary>
     Task UnlockAccountAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Changes a user's password. Requires the current password for verification.
+    /// </summary>
+    Task<(bool Success, string? ErrorMessage)> ChangePasswordAsync(
+        Guid userId,
+        string currentPassword,
+        string newPassword,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

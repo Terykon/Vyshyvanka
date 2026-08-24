@@ -58,6 +58,18 @@ public record RefreshRequest
 }
 
 /// <summary>
+/// Request payload to change the current user's password.
+/// </summary>
+public record ChangePasswordRequest
+{
+    /// <summary>The user's current password for verification.</summary>
+    public string CurrentPassword { get; init; } = string.Empty;
+
+    /// <summary>The new password to set.</summary>
+    public string NewPassword { get; init; } = string.Empty;
+}
+
+/// <summary>
 /// Public authentication configuration the Designer uses to adapt its login flow.
 /// Returned anonymously so the client can determine the active provider before authenticating.
 /// </summary>
@@ -74,6 +86,12 @@ public record AuthConfigResponse
 
     /// <summary>Whether self-service user registration is permitted for the active provider.</summary>
     public bool AllowRegistration { get; init; }
+
+    /// <summary>
+    /// Whether the development credentials panel should be shown on the login page.
+    /// True when using BuiltIn auth and at least one seeded user has not changed their password.
+    /// </summary>
+    public bool ShowDevCredentials { get; init; }
 }
 
 /// <summary>
