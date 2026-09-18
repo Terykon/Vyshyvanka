@@ -40,7 +40,7 @@
     <!-- Logging -->
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
     <!-- JavaScript Engine -->
-    <PackageVersion Include="Jint" Version="4.16.1" />
+    <PackageVersion Include="Jint" Version="4.16.2" />
     <!-- Cron Expression Parsing -->
     <PackageVersion Include="Cronos" Version="0.13.0" />
     <!-- JSONata Expression Language -->
